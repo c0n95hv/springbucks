@@ -14,7 +14,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Slf4j
 public class SpringbucksApplication implements CommandLineRunner {
     @Autowired
-    private TransactionTemplate transactionTemplate;
+    private FooService fooService;
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
@@ -24,20 +24,23 @@ public class SpringbucksApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        log.info("COUNT BEFORE TRANSACTION: {}", getCount());
-        transactionTemplate.execute(new TransactionCallbackWithoutResult() {
-            @Override
-            protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                jdbcTemplate.execute("INSERT INTO FOO (ID, BAR) VALUES (1, 'aaa')");
-                log.info("COUNT IN TRANSACTION: {}", getCount());
-                transactionStatus.setRollbackOnly();
-            }
-        });
-        log.info("COUNT BEFORE TRANSACTION: {}", getCount());
-    }
-
-    private long getCount() {
-        return (long) jdbcTemplate.queryForList("SELECT COUNT(*) AS CNT FROM FOO")
-                .get(0).get("CNT");
+        fooService.insertRecord();
+        log.info("AAA {}",
+                jdbcTemplate
+                        .queryForObject("SELECT COUNT(*) FROM FOO WHERE BAR='AAA'", Long.class));
+        try {
+            fooService.insertThenRollback();
+        } catch (Exception e) {
+            log.info("BBB {}",
+                    jdbcTemplate
+                            .queryForObject("SELECT COUNT(*) FROM FOO WHERE BAR='BBB'", Long.class));
+        }
+        try {
+            fooService.invokeInsertThenRollback();
+        } catch (Exception e) {
+            log.info("BBB {}",
+                    jdbcTemplate
+                            .queryForObject("SELECT COUNT(*) FROM FOO WHERE BAR='BBB'", Long.class));
+        }
     }
 }
