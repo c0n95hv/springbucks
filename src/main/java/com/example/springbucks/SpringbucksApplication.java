@@ -1,46 +1,11 @@
 package com.example.springbucks;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallbackWithoutResult;
-import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootApplication()
-@Slf4j
-public class SpringbucksApplication implements CommandLineRunner {
-    @Autowired
-    private FooService fooService;
-    @Autowired
-    private JdbcTemplate jdbcTemplate;
-
+public class SpringbucksApplication {
     public static void main(String[] args) {
         SpringApplication.run(SpringbucksApplication.class, args);
-    }
-
-    @Override
-    public void run(String... args) throws Exception {
-        fooService.insertRecord();
-        log.info("AAA {}",
-                jdbcTemplate
-                        .queryForObject("SELECT COUNT(*) FROM FOO WHERE BAR='AAA'", Long.class));
-        try {
-            fooService.insertThenRollback();
-        } catch (Exception e) {
-            log.info("BBB {}",
-                    jdbcTemplate
-                            .queryForObject("SELECT COUNT(*) FROM FOO WHERE BAR='BBB'", Long.class));
-        }
-        try {
-            fooService.invokeInsertThenRollback();
-        } catch (Exception e) {
-            log.info("BBB {}",
-                    jdbcTemplate
-                            .queryForObject("SELECT COUNT(*) FROM FOO WHERE BAR='BBB'", Long.class));
-        }
     }
 }
