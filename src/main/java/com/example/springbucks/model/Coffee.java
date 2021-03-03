@@ -1,23 +1,26 @@
 package com.example.springbucks.model;
 
-import lombok.*;
-import org.hibernate.annotations.Type;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.joda.money.Money;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
 
-@Entity
-@Table(name = "T_COFFEE")
-@Builder
+import java.util.Date;
+
+@Document
 @Data
-@ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Coffee extends BaseEntity implements Serializable {
+@Builder
+public class Coffee {
+    @Id
+    private String id;
     private String name;
-    @Type(type = "org.jadira.usertype.moneyandcurrency.joda.PersistentMoneyMinorAmount",
-            parameters = {@org.hibernate.annotations.Parameter(name = "currencyCode", value = "CNY")})
     private Money price;
+    private Date createTime;
+    private Date updateTime;
 }
